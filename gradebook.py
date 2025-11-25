@@ -12,7 +12,6 @@ def load_gradebook():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-       
         if isinstance(data, list):
             return data
         else:
@@ -64,16 +63,16 @@ def input_positive_int(prompt):
 
 def input_score(prompt):
     """
-    Score is treated as grade point on 0.0–4.0 scale.
+    Score is treated as a numeric grade on a 0–100 scale.
     """
     while True:
         raw = input(prompt).strip()
         try:
             value = float(raw)
-            if 0.0 <= value <= 4.0:
+            if 0 <= value <= 100:
                 return value
             else:
-                print("Score must be between 0.0 and 4.0.")
+                print("Score must be between 0 and 100.")
         except ValueError:
             print("Please enter a valid number.")
 
@@ -82,7 +81,6 @@ def add_course(gradebook):
     print("\n=== Add a New Course ===")
     code = input_non_empty("Course code: ")
 
-    
     if find_course_index(gradebook, code) is not None:
         print(f"Error: Course with code '{code}' already exists.")
         return
@@ -90,7 +88,7 @@ def add_course(gradebook):
     name = input_non_empty("Course name: ")
     credits = input_positive_int("Number of credits: ")
     semester = input_non_empty("Semester (e.g., 2025-Fall): ")
-    score = input_score("Score (0.0–4.0): ")
+    score = input_score("Score (0–100): ")
 
     course = {
         "code": code,
@@ -141,11 +139,11 @@ def update_course(gradebook):
     if new_sem:
         course["semester"] = new_sem
 
-    new_score = input("New score 0.0–4.0 (leave blank to keep current): ").strip()
+    new_score = input("New score 0–100 (leave blank to keep current): ").strip()
     if new_score:
         try:
             score = float(new_score)
-            if 0.0 <= score <= 4.0:
+            if 0 <= score <= 100:
                 course["score"] = score
             else:
                 print("Invalid score. Keeping old value.")
@@ -182,18 +180,19 @@ def view_gradebook(gradebook):
         print("No courses in the gradebook yet.\n")
         return
 
-    header = f"{'Code':<10} {'Name':<30} {'Cred':>4} {'Semester':<12} {'Score':>5}"
+    header = f"{'Code':<10} {'Name':<30} {'Cred':>4} {'Semester':<12} {'Score':>6}"
     print(header)
     print("-" * len(header))
     for c in gradebook:
         print(
             f"{c['code']:<10} {c['name']:<30} {c['credits']:>4} "
-            f"{c['semester']:<12} {c['score']:>5.2f}"
+            f"{c['semester']:<12} {c['score']:>6.2f}"
         )
     print()
 
 
 def calculate_overall_gpa(gradebook):
+    """Here 'GPA' is really a weighted average score from 0–100."""
     total_credits = 0
     total_points = 0.0
 
@@ -210,6 +209,7 @@ def calculate_overall_gpa(gradebook):
 
 
 def calculate_gpa_by_semester(gradebook):
+    """Weighted average score 0–100 by semester."""
     semester_stats = {}
 
     for c in gradebook:
@@ -234,19 +234,19 @@ def calculate_gpa_by_semester(gradebook):
 
 
 def show_gpa_summary(gradebook):
-    print("\n=== GPA Summary ===")
+    print("\n=== Score Summary (0–100) ===")
     if not gradebook:
-        print("No courses available to compute GPA.\n")
+        print("No courses available to compute scores.\n")
         return
 
     overall = calculate_overall_gpa(gradebook)
     if overall is None:
-        print("Could not compute GPA (no valid credits).\n")
+        print("Could not compute average score (no valid credits).\n")
     else:
-        print(f"Overall weighted GPA: {overall:.2f}")
+        print(f"Overall weighted average score: {overall:.2f}")
 
     gpa_sem = calculate_gpa_by_semester(gradebook)
-    print("\nGPA by semester:")
+    print("\nAverage score by semester:")
     for sem in sorted(gpa_sem.keys()):
         g = gpa_sem[sem]
         if g is None:
@@ -264,7 +264,7 @@ def print_menu():
     print("2. Update a course")
     print("3. Delete a course")
     print("4. View gradebook")
-    print("5. Show GPA summary")
+    print("5. Show score summary")
     print("6. Exit")
     print("===================================")
 
