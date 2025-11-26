@@ -192,7 +192,7 @@ def view_gradebook(gradebook):
 
 
 def calculate_overall_gpa(gradebook):
-    """Here 'GPA' is really a weighted average score from 0–100."""
+    """Here 'GPA' is really a weighted GPA score from 0–100."""
     total_credits = 0
     total_points = 0.0
 
@@ -209,7 +209,7 @@ def calculate_overall_gpa(gradebook):
 
 
 def calculate_gpa_by_semester(gradebook):
-    """Weighted average score 0–100 by semester."""
+    """Weighted GPA score 0–100 by semester."""
     semester_stats = {}
 
     for c in gradebook:
@@ -234,19 +234,19 @@ def calculate_gpa_by_semester(gradebook):
 
 
 def show_gpa_summary(gradebook):
-    print("\n=== Score Summary (0–100) ===")
+    print("\n=== Score GPA (0–100) ===")
     if not gradebook:
         print("No courses available to compute scores.\n")
         return
 
     overall = calculate_overall_gpa(gradebook)
     if overall is None:
-        print("Could not compute average score (no valid credits).\n")
+        print("Could not compute GPA score (no valid credits).\n")
     else:
-        print(f"Overall weighted average score: {overall:.2f}")
+        print(f"Overall weighted GPA score: {overall:.2f}")
 
     gpa_sem = calculate_gpa_by_semester(gradebook)
-    print("\nAverage score by semester:")
+    print("\nGPA score by semester:")
     for sem in sorted(gpa_sem.keys()):
         g = gpa_sem[sem]
         if g is None:
@@ -264,7 +264,7 @@ def print_menu():
     print("2. Update a course")
     print("3. Delete a course")
     print("4. View gradebook")
-    print("5. Show score summary")
+    print("5. Show score GPA")
     print("6. Exit")
     print("===================================")
 
